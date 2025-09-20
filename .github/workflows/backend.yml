@@ -26,6 +26,7 @@ jobs:
                 with:
                     install_args: "--with dev"
                     python_version: "3.13"
+                    working_dir: "backend"
 
             -   name: Black (check)
                 run: poetry run black --check .
