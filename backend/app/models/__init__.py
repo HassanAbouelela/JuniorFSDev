@@ -1,3 +1,5 @@
+"""Database models."""
+
 from .agent import AgentResponse, AgentType
 from .task import Task, TaskPriority, TaskStatus
 from .user import User

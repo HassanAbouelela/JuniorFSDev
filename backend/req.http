@@ -1,0 +1,28 @@
+@BASE_URL = http://localhost:8000
+
+### Healthcheck
+GET {{BASE_URL}}/health
+
+
+### Create User
+POST {{BASE_URL}}/users/
+Content-Type: application/json
+
+{
+    "name": "Hassan",
+    "email": "hassan@hassanamr.com",
+    "password": "very-secure-password"
+}
+
+### Get Token
+POST {{BASE_URL}}/users/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&
+username=hassan@hassanamr.com&
+password=very-secure-password
+
+
+### Get Current User
+GET {{BASE_URL}}/users/me
+Authorization: Bearer {{$auth.token("password-auth")}}
