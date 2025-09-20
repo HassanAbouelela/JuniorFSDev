@@ -1,9 +1,13 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
 
 settings = get_settings()
+logger = logging.getLogger(__name__)
+logger.parent.setLevel(settings.LOG_LEVEL)
 
 app = FastAPI(title=settings.APP_NAME, root_path=settings.DEPLOYMENT_PREFIX)
 
