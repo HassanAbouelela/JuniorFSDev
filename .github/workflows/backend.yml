@@ -11,6 +11,7 @@ on:
 
 jobs:
     lint-test:
+        name: Lint & Test
         runs-on: ubuntu-latest
 
         defaults:
@@ -27,6 +28,7 @@ jobs:
                     install_args: "--with dev"
                     python_version: "3.13"
                     working_dir: "backend"
+                    cache_pre-commit: false
 
             -   name: Black (check)
                 run: poetry run black --check .
