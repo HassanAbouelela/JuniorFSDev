@@ -35,3 +35,4 @@ profile = "black"
 
 [tool.pytest.ini_options]
 addopts = "-q"
+pythonpath = "."
