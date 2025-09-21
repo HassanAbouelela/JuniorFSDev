@@ -25,7 +25,7 @@ app.add_middleware(
 
 app.include_router(users.router, prefix="/users")
 app.include_router(tasks.router, prefix="/tasks")
-app.include_router(agents.router, prefix="/agents")
+app.include_router(agents.router, prefix="/tasks")
 app.include_router(sockets.router, prefix="/ws")
 
 
