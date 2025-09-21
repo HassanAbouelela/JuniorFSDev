@@ -101,7 +101,15 @@ def generate_token(duration: datetime.timedelta, user_email: str, token_type: TO
 
 
 REQUIRE_USER: TypeAlias = Annotated[models.User, Depends(_require_user)]
+REQUIRE_USER_PATH = Depends(_require_user)
 REQUIRE_ADMIN_USER: TypeAlias = Annotated[models.User, Depends(_require_admin_user)]
 REQUIRE_ADMIN_PATH = Depends(_require_admin_user)
 
-__all__ = ["REQUIRE_USER", "REQUIRE_ADMIN_USER", "REQUIRE_ADMIN_PATH", "generate_token", "read_token_subject"]
+__all__ = [
+    "REQUIRE_USER",
+    "REQUIRE_USER_PATH",
+    "REQUIRE_ADMIN_USER",
+    "REQUIRE_ADMIN_PATH",
+    "generate_token",
+    "read_token_subject",
+]

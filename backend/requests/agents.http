@@ -1,0 +1,9 @@
+@task_id = 09c89b0d-5102-4728-bae2-5897612deca9
+
+### Analyze Task
+POST {{BASE_URL}}/agents/{{task_id}}/analyze
+Authorization: Bearer {{$auth.token("password-auth")}}
+
+### Assist Task
+POST {{BASE_URL}}/agents/{{task_id}}/assist
+Authorization: Bearer {{$auth.token("password-auth")}}
