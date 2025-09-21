@@ -44,6 +44,7 @@ def list_tasks(
                 models.Task.readers.any(models.TaskReaders.user_id == user.id),
             )
         )
+        .order_by(models.Task.created_at.desc())
         .offset(skip)
         .limit(limit)
     )
