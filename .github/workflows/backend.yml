@@ -97,7 +97,7 @@ jobs:
                     # If there are changes to the migrations directory, error out
                     MIGRATIONS_DIR="./migrations"
                     if ! git diff --quiet "$MIGRATIONS_DIR"; then
-                        echo "::error title=Pending Migrations::Detected unapplied atlas migrations. Please run `atlas migrate diff --env dev` and commit."
+                        echo "::error title=Pending Migrations::Detected unapplied atlas migrations. Please run 'atlas migrate diff --env dev' and commit."
                         git --no-pager diff "$MIGRATIONS_DIR"
                         exit 12
                     else
@@ -124,7 +124,7 @@ jobs:
                 uses: docker/setup-buildx-action@v3
 
             -   name: Login to Docker Hub
-                if: github.ref_name == 'main'
+                if: github.event_name == 'push' && github.ref_name == 'main'
                 uses: docker/login-action@v3
                 with:
                     username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -135,5 +135,5 @@ jobs:
                 with:
                     context: ./backend
                     file: ./backend/Dockerfile
-                    push: ${{ github.ref_name == 'main' }}
+                    push: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
                     tags: ${{ secrets.DOCKERHUB_USERNAME || 'local' }}/task-ai-backend:${{ github.sha }}
