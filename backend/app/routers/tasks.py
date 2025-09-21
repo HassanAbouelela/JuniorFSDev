@@ -1,7 +1,7 @@
 import uuid
 
 from fastapi import APIRouter, HTTPException, Query
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from app import models
@@ -25,7 +25,7 @@ def create_task(payload: TaskCreate, db: DB_SESSION, user: REQUIRE_USER) -> Task
     db.add(task)
     db.flush()
     db.refresh(task)
-    return TaskRead.from_db(task)
+    return TaskRead.from_db(db, task)
 
 
 @router.get("/", response_model=list[TaskSummary])
@@ -56,7 +56,7 @@ def get_task_for_user(db: Session, task_id: uuid.UUID, user_id: uuid.UUID) -> mo
 @router.get("/{task_id}", response_model=TaskRead)
 def get_task(task_id: uuid.UUID, db: DB_SESSION, user: REQUIRE_USER) -> TaskRead:
     task = get_task_for_user(db, task_id, user.id)
-    return TaskRead.from_db(task)
+    return TaskRead.from_db(db, task)
 
 
 @router.put("/{task_id}", response_model=TaskRead)
@@ -67,7 +67,56 @@ def update_task(task_id: uuid.UUID, payload: TaskUpdate, db: DB_SESSION, user: R
     db.add(task)
     db.flush()
     db.refresh(task)
-    return TaskRead.from_db(task)
+    return TaskRead.from_db(db, task)
+
+
+@router.post("/subscribe/{task_id}/{other_email}", response_model=TaskRead)
+def subscribe_user(task_id: uuid.UUID, other_email: str, db: DB_SESSION, user: REQUIRE_USER) -> TaskRead:
+    """Allow a user to add another as a viewer to their task."""
+    other_user_query = select(models.User).where(models.User.email == other_email).limit(1)
+    other_user: models.User | None = db.execute(other_user_query).scalar_one_or_none()
+    if other_user is None:
+        raise HTTPException(status_code=404, detail="Other user not found.")
+
+    task = get_task_for_user(db, task_id, user.id)
+
+    # Check for existing entry
+    existing_query = (
+        select(models.TaskReaders)
+        .where(
+            models.TaskReaders.task_id == task.id,
+            models.TaskReaders.user_id == other_user.id,
+        )
+        .limit(1)
+    )
+
+    if db.execute(existing_query).scalar_one_or_none() is None:
+        db.add(models.TaskReaders(task_id=task.id, user_id=other_user.id))
+        db.flush()
+
+    db.refresh(task)
+    return TaskRead.from_db(db, task)
+
+
+@router.delete("/subscribe/{task_id}/{other_email}", response_model=TaskRead)
+def unsubscribe_user(task_id: uuid.UUID, other_email: str, db: DB_SESSION, user: REQUIRE_USER) -> TaskRead:
+    other_user_query = select(models.User).where(models.User.email == other_email).limit(1)
+    other_user: models.User | None = db.execute(other_user_query).scalar_one_or_none()
+    if other_user is None:
+        raise HTTPException(status_code=404, detail="Other user not found.")
+
+    # Ensure the task exists and is owned by the current user
+    task = get_task_for_user(db, task_id, user.id)
+
+    delete_query = delete(models.TaskReaders).where(
+        models.TaskReaders.task_id == task_id,
+        models.TaskReaders.user_id == other_user.id,
+    )
+    db.execute(delete_query)
+    db.flush()
+
+    db.refresh(task)
+    return TaskRead.from_db(db, task)
 
 
 @router.delete("/{task_id}", status_code=204)

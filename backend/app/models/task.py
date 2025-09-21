@@ -3,8 +3,8 @@ import enum
 import typing
 import uuid
 
-from sqlalchemy import DateTime, Enum, ForeignKey, String, Text, Uuid
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import DateTime, Enum, ForeignKey, String, Text, Uuid, select
+from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
 
 from app.db import Base, UTCNow
 
@@ -23,6 +23,22 @@ class TaskStatus(str, enum.Enum):
     pending = "Pending"
     in_progress = "In Progress"
     completed = "Completed"
+
+
+# Association table for task readers (many-to-many Task <-> User)
+class TaskReaders(Base):
+    __tablename__ = "task_readers"
+
+    task_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid,
+        ForeignKey("tasks.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
 
 
 class Task(Base):
@@ -58,3 +74,12 @@ class Task(Base):
         back_populates="task",
         cascade="all, delete-orphan",
     )
+    readers: Mapped[list["TaskReaders"]] = relationship(passive_deletes=True)
+
+    def get_reader_emails(self, db: Session) -> list[str]:
+        """Return all reader email addresses for this task in a single query."""
+        # Local import avoids circular imports at module import time.
+        from app.models.user import User
+
+        q = select(User.email).join(TaskReaders, TaskReaders.user_id == User.id).where(TaskReaders.task_id == self.id)
+        return list(db.execute(q).scalars().all())

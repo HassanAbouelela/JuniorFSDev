@@ -3,6 +3,7 @@ import uuid
 from typing import Self
 
 from pydantic import BaseModel, ConfigDict, Field
+from sqlalchemy.orm import Session
 
 from app import models
 from app.models import TaskPriority, TaskStatus
@@ -52,7 +53,10 @@ class TaskRead(TaskBase):
     created_at: datetime.datetime
     updated_at: datetime.datetime
     user_id: uuid.UUID
+    reader_emails: list[str] = Field(default_factory=list)
 
     @classmethod
-    def from_db(cls, task: models.Task) -> Self:
-        return cls.model_validate(task)
+    def from_db(cls, db: Session, task: models.Task) -> Self:
+        result = cls.model_validate(task)
+        result.reader_emails = task.get_reader_emails(db)
+        return result
