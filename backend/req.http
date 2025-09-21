@@ -1,10 +1,11 @@
 @BASE_URL = http://localhost:8000
+@email = hassan@hassanamr.com
 
 ### Healthcheck
 GET {{BASE_URL}}/health
 
 
-### Create User
+### Create Regular User
 POST {{BASE_URL}}/users/
 Content-Type: application/json
 
@@ -14,6 +15,33 @@ Content-Type: application/json
     "password": "very-secure-password"
 }
 
+### Create Admin User (In Development Only)
+POST {{BASE_URL}}/users
+Content-Type: application/json
+
+{
+    "name": "Admin",
+    "email": "admin@example.com",
+    "password": "admin-password"
+}
+
+### Modify User
+PUT {{BASE_URL}}/users/{{email}}
+Authorization: Bearer {{$auth.token("password-auth")}}
+Content-Type: application/json
+
+{
+    "is_admin": false
+}
+
+### Delete User
+DELETE {{BASE_URL}}/users/{{email}}
+Authorization: Bearer {{$auth.token("password-auth")}}
+
+### Get Current User
+GET {{BASE_URL}}/users/me
+Authorization: Bearer {{$auth.token("password-auth")}}
+
 ### Get Token
 POST {{BASE_URL}}/users/token
 Content-Type: application/x-www-form-urlencoded
@@ -21,8 +49,3 @@ Content-Type: application/x-www-form-urlencoded
 grant_type=password&
 username=hassan@hassanamr.com&
 password=very-secure-password
-
-
-### Get Current User
-GET {{BASE_URL}}/users/me
-Authorization: Bearer {{$auth.token("password-auth")}}

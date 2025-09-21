@@ -79,6 +79,12 @@ async def _require_user(token: Annotated[str, Depends(oauth2_scheme)], db: DB_SE
     return user
 
 
+async def _require_admin_user(user: Annotated[models.User, Depends(_require_user)]) -> User:
+    if not user.is_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    return user
+
+
 def generate_token(duration: datetime.timedelta, user_email: str, token_type: TOKEN_TYPES) -> str:
     nbf = datetime.datetime.now(tz=datetime.timezone.utc)
     exp = nbf + duration
@@ -93,5 +99,7 @@ def generate_token(duration: datetime.timedelta, user_email: str, token_type: TO
 
 
 REQUIRE_USER: TypeAlias = Annotated[models.User, Depends(_require_user)]
+REQUIRE_ADMIN_USER: TypeAlias = Annotated[models.User, Depends(_require_admin_user)]
+REQUIRE_ADMIN_PATH = Depends(_require_admin_user)
 
-__all__ = ["REQUIRE_USER", "generate_token", "read_token_subject"]
+__all__ = ["REQUIRE_USER", "REQUIRE_ADMIN_USER", "REQUIRE_ADMIN_PATH", "generate_token", "read_token_subject"]

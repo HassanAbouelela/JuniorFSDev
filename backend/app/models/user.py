@@ -2,7 +2,7 @@ import datetime
 import typing
 import uuid
 
-from sqlalchemy import DateTime, String, Uuid
+from sqlalchemy import Boolean, DateTime, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base, UTCNow
@@ -19,6 +19,7 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String, nullable=False)
+    is_admin: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     # Metadata
     created_at: Mapped[datetime.datetime] = mapped_column(
