@@ -1,9 +1,0 @@
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-    name: task-frontend-config
-    namespace: apps
-data:
-    NEXT_PUBLIC_API_BASE: "https://tasks.hassanamr.dev/api"
-    NEXT_PUBLIC_WS_BASE: "wss://tasks.hassanamr.dev/api"
