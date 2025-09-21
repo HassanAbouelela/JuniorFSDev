@@ -139,4 +139,5 @@ jobs:
                     context: ./backend
                     file: ./backend/Dockerfile
                     push: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
-                    tags: ${{ secrets.DOCKERHUB_USERNAME || 'local' }}/task-ai-backend:${{ github.sha }}
+                    tags: |
+                        ${{ secrets.DOCKERHUB_USERNAME || 'local' }}/task-ai-backend:${{ github.sha }},${{ secrets.DOCKERHUB_USERNAME || 'local' }}/task-ai-backend:latest
