@@ -142,7 +142,8 @@ jobs:
                     file: ./backend/Dockerfile
                     push: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
                     tags: |
-                        ${{ secrets.DOCKERHUB_USERNAME || 'local' }}/task-ai-backend:${{ github.sha }},${{ secrets.DOCKERHUB_USERNAME || 'local' }}/task-ai-backend:latest
+                        ${{ secrets.DOCKERHUB_USERNAME || 'local' }}/task-ai-backend:${{ github.sha }}
+                        ${{ secrets.DOCKERHUB_USERNAME || 'local' }}/task-ai-backend:latest
 
     deploy-staging:
         name: Deploy To Staging
@@ -169,7 +170,7 @@ jobs:
                         cd /home/ubuntu/
                         # Clone or update repo
                         if [ ! -d "/home/ubuntu/infra_repo" ]; then
-                            git clone ${{ github.repositoryUrl }} infra_repo
+                            git clone https://github.com/HassanAbouelela/JuniorFSDev infra_repo
                         fi
 
                         cd /home/ubuntu/infra_repo
