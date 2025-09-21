@@ -45,4 +45,4 @@ def pg_utcnow(_element, _compiler, **_kw):
     return "TIMEZONE('utc', CURRENT_TIMESTAMP)"
 
 
-__all__ = ["Base", "DB_SESSION", "UTCNow"]
+__all__ = ["Base", "DB_SESSION", "UTCNow", "SessionFactory"]

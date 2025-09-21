@@ -38,12 +38,17 @@ class TaskSummary(BaseModel):
     title: str
     priority: TaskPriority
     status: TaskStatus
-    deadline: datetime.datetime
+    deadline: datetime.datetime | None
     user_id: uuid.UUID
+    owner_name: str = ""
+    owner_email: str = ""
 
     @classmethod
     def from_db(cls, task: models.Task) -> Self:
-        return cls.model_validate(task)
+        result = cls.model_validate(task)
+        result.owner_name = task.user.name
+        result.owner_email = task.user.email
+        return result
 
 
 class TaskRead(TaskBase):
@@ -53,10 +58,14 @@ class TaskRead(TaskBase):
     created_at: datetime.datetime
     updated_at: datetime.datetime
     user_id: uuid.UUID
+    owner_name: str = ""
+    owner_email: str = ""
     reader_emails: list[str] = Field(default_factory=list)
 
     @classmethod
     def from_db(cls, db: Session, task: models.Task) -> Self:
         result = cls.model_validate(task)
+        result.owner_name = task.user.name
+        result.owner_email = task.user.email
         result.reader_emails = task.get_reader_emails(db)
         return result
