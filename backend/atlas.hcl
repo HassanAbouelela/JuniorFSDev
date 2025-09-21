@@ -19,3 +19,14 @@ env "dev" {
     }
   }
 }
+
+env "CI" {
+  src = data.external_schema.app.url
+
+  url = "postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable"
+  dev = "docker://postgres/17/dev"
+
+  migration {
+    dir = "file://migrations"
+  }
+}

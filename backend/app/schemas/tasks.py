@@ -11,7 +11,7 @@ from app.models import TaskPriority, TaskStatus
 
 class TaskBase(BaseModel):
     title: str = Field(max_length=100)
-    description: str = Field(max_length=5000)
+    description: str = Field(max_length=500)
     priority: TaskPriority = TaskPriority.medium
     status: TaskStatus = TaskStatus.pending
     deadline: datetime.datetime | None = None
@@ -23,7 +23,7 @@ class TaskCreate(TaskBase):
 
 class TaskUpdate(BaseModel):
     title: str | None = Field(None, max_length=100)
-    description: str | None = Field(None, max_length=5000)
+    description: str | None = Field(None, max_length=500)
     priority: TaskPriority | None = None
     status: TaskStatus | None = None
     deadline: datetime.datetime | None = None
