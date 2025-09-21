@@ -8,5 +8,6 @@ data:
     APP_ENV: "production"
     DEPLOYMENT_PREFIX: "/api"
     LOG_LEVEL: "INFO"
+    FORWARDED_ALLOW_IPS: "*"
     CORS_ORIGINS: |
         ["https://tasks.hassanamr.dev"]
