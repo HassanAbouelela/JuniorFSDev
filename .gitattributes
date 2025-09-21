@@ -1,0 +1,2 @@
+# Encrypt kubernetes secrets using git-crypt
+deployment/manifests/secrets/** filter=git-crypt diff=git-crypt

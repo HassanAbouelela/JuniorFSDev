@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: task-backend-config
+    namespace: apps
+data:
+    APP_ENV: "production"
+    DEPLOYMENT_PREFIX: "/api"
+    LOG_LEVEL: "INFO"
+    CORS_ORIGINS: |
+        ["https://tasks.hassanamr.dev"]

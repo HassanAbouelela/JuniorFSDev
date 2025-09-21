@@ -1,0 +1,13 @@
+[Unit]
+Description=Minikube tunnel to expose ingresses publicly
+After=network.target docker.target
+
+[Service]
+ExecStart=/usr/local/bin/minikube tunnel --bind-address 0.0.0.0
+Restart=always
+User=ubuntu
+StandardOutput=file:/var/log/minikube-tunnel.log
+StandardError=file:/var/log/minikube-tunnel.err
+
+[Install]
+WantedBy=multi-user.target

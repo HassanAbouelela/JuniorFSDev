@@ -30,3 +30,14 @@ env "CI" {
     dir = "file://migrations"
   }
 }
+
+env "prod" {
+    src = data.external_schema.app.url
+
+    url = getenv("DATABASE_URL")
+    dev = "docker://postgres/17/dev"
+
+    migration {
+      dir = "file://migrations"
+    }
+}

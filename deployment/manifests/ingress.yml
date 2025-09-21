@@ -1,0 +1,33 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: task-ingresses
+    namespace: apps
+    annotations:
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+        cert-manager.io/cluster-issuer: letsencrypt-cloudflare
+spec:
+    tls:
+        -   hosts:
+                - tasks.hassanamr.dev
+            secretName: task-app-tls
+    rules:
+        -   host: tasks.hassanamr.dev
+            http:
+                paths:
+                    -   path: /api
+                        pathType: Prefix
+                        backend:
+                            service:
+                                name: task-backend-service
+                                port:
+                                    number: 8000
+
+                    -   path: /
+                        pathType: Prefix
+                        backend:
+                            service:
+                                name: task-frontend-service
+                                port:
+                                    number: 80

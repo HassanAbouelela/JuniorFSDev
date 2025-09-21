@@ -1,0 +1,41 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: task-backend
+    namespace: apps
+    labels:
+        app: task-backend
+spec:
+    replicas: 2
+    selector:
+        matchLabels:
+            app: task-backend
+    template:
+        metadata:
+            labels:
+                app: task-backend
+        spec:
+            containers:
+                -   name: task-backend
+                    image: hassanabouelela/task-ai-backend:latest
+                    ports:
+                        -   containerPort: 8000
+                    envFrom:
+                        -   configMapRef:
+                                name: task-backend-config
+                        -   secretRef:
+                                name: task-backend-secrets
+                    resources:
+                        limits:
+                            cpu: "500m"
+                            memory: "512Mi"
+                        requests:
+                            cpu: "200m"
+                            memory: "256Mi"
+                    livenessProbe:
+                        httpGet:
+                            path: /health
+                            port: 8000
+                        initialDelaySeconds: 30
+                        periodSeconds: 10

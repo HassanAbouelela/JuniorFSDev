@@ -1,5 +1,6 @@
 ### Project Ignores
 Junior Full-Stack Developer - 2-Day.txt
+.git-crypt
 
 ### VisualStudioCode template
 .vscode/*

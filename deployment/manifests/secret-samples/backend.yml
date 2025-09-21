@@ -1,0 +1,11 @@
+---
+# This is only a sample of the actual encrypted secret
+apiVersion: v1
+kind: Secret
+metadata:
+    name: task-backend-secrets
+    namespace: apps
+type: Opaque
+data:
+    JWT_KEY: ""
+    DATABASE_URL: ""
