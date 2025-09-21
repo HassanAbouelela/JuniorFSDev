@@ -75,6 +75,14 @@ jobs:
             -   uses: actions/checkout@v4
             -   uses: ariga/setup-atlas@v0
 
+            -   name: Install Python Dependencies
+                uses: HassanAbouelela/actions/setup-python@setup-python_v1.6.0
+                with:
+                    install_args: "--with migrations"
+                    python_version: "3.13"
+                    working_dir: "backend"
+                    cache_pre-commit: false
+
             -   name: Lint Migrations
                 run: atlas migrate lint --env CI --latest 100
 
