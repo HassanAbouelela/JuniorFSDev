@@ -75,18 +75,34 @@ jobs:
             -   uses: actions/checkout@v4
             -   uses: ariga/setup-atlas@v0
 
-            -   name: Atlas Lint
+            -   name: Lint Migrations
                 run: atlas migrate lint --env CI --latest 100
 
-            -   uses: ariga/atlas-action/migrate/test@v1.12.0
-                with:
-                    working-directory: backend
-                    env: CI
+            -   name: Validate Migrations
+                run: atlas migrate validate --env CI
+
+            -   name: Check Schema Updated
+                run: |
+                    # Try to generate an update
+                    atlas migrate diff --env CI
+
+                    # If there are changes to the migrations directory, error out
+                    MIGRATIONS_DIR="./migrations"
+                    if ! git diff --quiet "$MIGRATIONS_DIR"; then
+                        echo "::error title=Pending Migrations::Detected unapplied atlas migrations. Please run `atlas migrate diff --env dev` and commit."
+                        git --no-pager diff "$MIGRATIONS_DIR"
+                        exit 12
+                    else
+                        echo "All migrations up to date"
+                    fi
+
+            -   name: Apply Migrations To Test DB
+                run: atlas migrate apply --env CI
 
     docker-build:
         name: Docker Build
         runs-on: ubuntu-latest
-        needs: [lint-test, atlas-check]
+        needs: [ lint-test, atlas-check ]
 
         defaults:
             run:
