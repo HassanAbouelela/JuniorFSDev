@@ -1,0 +1,37 @@
+@task_id = b149768f-e860-4b22-b9fa-72dfac1f434c
+
+### List All Tasks
+GET {{BASE_URL}}/tasks/
+Authorization: Bearer {{$auth.token("password-auth")}}
+
+
+### Create Task
+POST {{BASE_URL}}/tasks/
+Authorization: Bearer {{$auth.token("password-auth")}}
+Content-Type: application/json
+
+{
+    "title": "Task One",
+    "description": "This is the first task we need to complete.",
+    "priority": "Medium",
+    "status": "Pending",
+    "deadline": "2025-10-21T16:09:58.165274"
+}
+
+### Get Task
+GET {{BASE_URL}}/tasks/{{task_id}}
+Authorization: Bearer {{$auth.token("password-auth")}}
+
+### Edit Task
+PUT {{BASE_URL}}/tasks/{{task_id}}
+Authorization: Bearer {{$auth.token("password-auth")}}
+Content-Type: application/json
+
+{
+    "description": "Updated description."
+}
+
+
+### Delete Task
+DELETE {{BASE_URL}}/tasks/{{task_id}}
+Authorization: Bearer {{$auth.token("password-auth")}}

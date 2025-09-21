@@ -69,6 +69,8 @@ def read_token_subject(token: str, expected_type: TOKEN_TYPES) -> str:
 
 
 async def _require_user(token: Annotated[str, Depends(oauth2_scheme)], db: DB_SESSION) -> User:
+    # Note: this uses non-stateless tokens, however if it is needed for performance reasons, we can encode
+    # the desired user attributes directly into the token.
     subject = read_token_subject(token, "access")
     user_query = select(models.User).where(models.User.email == subject).limit(1)
     user: models.User | None = db.execute(user_query).scalar_one_or_none()

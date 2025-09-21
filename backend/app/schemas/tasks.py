@@ -1,0 +1,58 @@
+import datetime
+import uuid
+from typing import Self
+
+from pydantic import BaseModel, ConfigDict, Field
+
+from app import models
+from app.models import TaskPriority, TaskStatus
+
+
+class TaskBase(BaseModel):
+    title: str = Field(max_length=100)
+    description: str = Field(max_length=5000)
+    priority: TaskPriority = TaskPriority.medium
+    status: TaskStatus = TaskStatus.pending
+    deadline: datetime.datetime | None = None
+
+
+class TaskCreate(TaskBase):
+    pass
+
+
+class TaskUpdate(BaseModel):
+    title: str | None = Field(None, max_length=100)
+    description: str | None = Field(None, max_length=5000)
+    priority: TaskPriority | None = None
+    status: TaskStatus | None = None
+    deadline: datetime.datetime | None = None
+
+
+class TaskSummary(BaseModel):
+    """Model with reduced data to make large queries more efficient."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    title: str
+    priority: TaskPriority
+    status: TaskStatus
+    deadline: datetime.datetime
+    user_id: uuid.UUID
+
+    @classmethod
+    def from_db(cls, task: models.Task) -> Self:
+        return cls.model_validate(task)
+
+
+class TaskRead(TaskBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+    user_id: uuid.UUID
+
+    @classmethod
+    def from_db(cls, task: models.Task) -> Self:
+        return cls.model_validate(task)
