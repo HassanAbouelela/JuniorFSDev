@@ -73,7 +73,7 @@ jobs:
             -   name: Atlas Lint
                 uses: ariga/atlas-action/migrate/lint@v1.12.0
                 with:
-                    dir-name: '' # Atlas cloud
+                    dir-name: 'ignored' # Atlas cloud
                     working-directory: backend
                     env: CI
 
