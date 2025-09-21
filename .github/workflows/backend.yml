@@ -5,11 +5,14 @@ on:
         paths:
             - "backend/**"
             - ".github/workflows/backend.yml"
-            - "deployment/backend/**"
+            - "deployment/manifests/backend/**"
+            - "deployment/manifests/cluster-issuer.yml"
+            - "deployment/manifests/ingress.yml"
+            - "deployment/manifests/namespaces.yml"
     pull_request:
         paths:
             - "backend/**"
-            - "deployment/backend/**"
+            - "deployment/manifests/backend/**"
 
 jobs:
     lint-test:
@@ -188,7 +191,7 @@ jobs:
                     script: |
                         set -e
                         cd /home/ubuntu/infra_repo/backend
-                        sudo atlas migrate apply --env prod
+                        sudo DATABASE_URL=$DATABASE_URL atlas migrate apply --env prod
 
             -   name: Apply Manifests
                 uses: appleboy/ssh-action@v1.2.2
