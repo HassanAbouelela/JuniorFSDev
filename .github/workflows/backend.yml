@@ -50,6 +50,11 @@ jobs:
         name: Test Database Migrations
         runs-on: ubuntu-latest
 
+        defaults:
+            run:
+                shell: bash
+                working-directory: backend
+
         services:
             database:
                 image: postgres:17
@@ -71,11 +76,7 @@ jobs:
             -   uses: ariga/setup-atlas@v0
 
             -   name: Atlas Lint
-                uses: ariga/atlas-action/migrate/lint@v1.12.0
-                with:
-                    dir-name: 'ignored' # Atlas cloud
-                    working-directory: backend
-                    env: CI
+                run: atlas migrate lint --env CI --latest 100
 
             -   uses: ariga/atlas-action/migrate/test@v1.12.0
                 with:
