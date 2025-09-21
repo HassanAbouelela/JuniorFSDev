@@ -11,13 +11,16 @@ logger = logging.getLogger(__name__)
 logger.parent.setLevel(settings.LOG_LEVEL)
 
 
-# TODO: Disable docs in production
-app = FastAPI(title=settings.APP_NAME, root_path=settings.DEPLOYMENT_PREFIX)
+app = FastAPI(
+    title=settings.APP_NAME,
+    root_path=settings.DEPLOYMENT_PREFIX,
+    openapi_url="/openapi.json" if settings.APP_ENV == "development" else None,
+)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
-    allow_origin_regex="http://localhost:\d+" if settings.APP_ENV == "development" else None,
+    allow_origin_regex=r"http://localhost:\d+" if settings.APP_ENV == "development" else None,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
