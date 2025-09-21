@@ -111,6 +111,9 @@ jobs:
         name: Docker Build
         runs-on: ubuntu-latest
         needs: [ lint-test, atlas-check ]
+        concurrency:
+            group: ${{ github.workflow }}-docker-build-${{ github.ref }}
+            cancel-in-progress: true
 
         defaults:
             run:
@@ -136,4 +139,5 @@ jobs:
                     context: ./backend
                     file: ./backend/Dockerfile
                     push: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
-                    tags: ${{ secrets.DOCKERHUB_USERNAME || 'local' }}/task-ai-backend:${{ github.sha }}
+                    tags: |
+                        ${{ secrets.DOCKERHUB_USERNAME || 'local' }}/task-ai-backend:${{ github.sha }},${{ secrets.DOCKERHUB_USERNAME || 'local' }}/task-ai-backend:latest
