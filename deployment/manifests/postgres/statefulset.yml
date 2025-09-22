@@ -1,0 +1,73 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+    name: postgres
+    namespace: postgres
+spec:
+    serviceName: postgres-headless
+    replicas: 1
+    selector:
+        matchLabels:
+            app: postgres
+    template:
+        metadata:
+            labels:
+                app: postgres
+        spec:
+            securityContext:
+                fsGroup: 999       # postgres user in official image
+                fsGroupChangePolicy: "OnRootMismatch"
+            containers:
+                -   name: postgres
+                    image: postgres:17
+                    imagePullPolicy: IfNotPresent
+                    ports:
+                        -   containerPort: 5432
+                            name: postgres
+                    envFrom:
+                        -   secretRef:
+                                name: postgres-secret
+                    env:
+                        -   name: PGDATA
+                            value: /var/lib/postgresql/data/pgdata
+                    volumeMounts:
+                        -   name: data
+                            mountPath: /var/lib/postgresql/data
+                    resources:
+                        requests:
+                            cpu: "100m"
+                            memory: "256Mi"
+                        limits:
+                            cpu: "1"
+                            memory: "1Gi"
+                    readinessProbe:
+                        exec:
+                            command:
+                                - sh
+                                - -c
+                                - exec pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1 -p 5432
+                        initialDelaySeconds: 5
+                        periodSeconds: 10
+                        timeoutSeconds: 5
+                        failureThreshold: 6
+                    livenessProbe:
+                        exec:
+                            command:
+                                - sh
+                                - -c
+                                - exec pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1 -p 5432
+                        initialDelaySeconds: 30
+                        periodSeconds: 10
+                        timeoutSeconds: 5
+                        failureThreshold: 6
+            terminationGracePeriodSeconds: 30
+    volumeClaimTemplates:
+        -   metadata:
+                name: data
+            spec:
+                accessModes: [ "ReadWriteOnce" ]
+                storageClassName: standard # Minikube built-in local provider
+                resources:
+                    requests:
+                        storage: 10Gi

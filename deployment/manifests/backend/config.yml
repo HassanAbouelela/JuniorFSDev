@@ -9,5 +9,6 @@ data:
     DEPLOYMENT_PREFIX: "/api"
     LOG_LEVEL: "INFO"
     FORWARDED_ALLOW_IPS: "*"
+    MOCK_AGENTS: "true"
     CORS_ORIGINS: |
         ["https://tasks.hassanamr.dev"]
