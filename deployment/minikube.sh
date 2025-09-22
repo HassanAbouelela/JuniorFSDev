@@ -1,4 +1,4 @@
-#!/bin/bsah
+#!/bin/bash
 set -e
 
 sudo apt-get -qq update -y 1>/dev/null && sudo apt-get -qq upgrade -y 1>/dev/null

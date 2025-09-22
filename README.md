@@ -3,10 +3,15 @@
 ```mermaid
 flowchart LR
     U[User Browser] -->|HTTPS| FE[Frontend NextJS]
-    FE -->|API calls| ING[Ingress or Load Balancer]
-    ING --> SVC[Service]
-    SVC --> API[Backend API Python]
-    API --> DB[Postgres Database]
+    FE -->|API calls| ING[Ingress]
+    ING -->|/api| SVC[Backend Service]
+    SVC --> API[FastAPI Backend]
+    ING -->|/| SVCF[Frontend Service]
+    SVCF --> Next[Next.js Frontend]
+    API -->|Agno| OpenAI[AI Chatbots]
+    API --> ORM[SQLAlchemy]
+    ORM --> DB[Postgres Database]
+    ATLAS[Atlas Migration Tool] --> DB
 
     subgraph CI_CD [CI CD]
         GIT[Git Repository] --> CI[Build and Test]
@@ -15,14 +20,29 @@ flowchart LR
     end
 
     subgraph K8s [Kubernetes Cluster minikube or managed]
+        FE
         ING
         SVC
         API
+        OpenAI
+        SVCF
+        Next
+        ORM
         DB
+        ATLAS
     end
 
-    DEPLOY -->|Apply manifests| ING
+    DEPLOY -->|Apply manifests| K8s
 ```
+
+# AI Usage
+
+A note on AI usage:
+
+This project made heavy use of AI to generate and modify code, however I reviewed all the code,
+and made architectural decisions that the AI could not.
+I tested and debugged, and ensured the product meets high standards.
+AI was used as a tool to accelerate development, rather than create the entire project.
 
 # TODO
 
