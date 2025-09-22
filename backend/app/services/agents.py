@@ -1,9 +1,36 @@
 """Agent integration."""
 
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+
 from app import models
 from app.config import get_settings
+from app.schemas.tasks import TaskAI
 
 settings = get_settings()
+
+_model = OpenAIChat(id=settings.OPENAI_MODEL, api_key=settings.OPENAI_API_KEY)
+_analyzer_agent = Agent(
+    model=_model,
+    description="You are an analytical assistant. Provide concise, structured analysis of a task.",
+    instructions=[
+        "Clarify objectives",
+        "Identify constraints and risks",
+        "Outline steps and dependencies",
+        "Suggest metrics of success",
+    ],
+)
+
+_assistant_agent = Agent(
+    model=_model,
+    description="You are a productivity assistant. Help the user move the task forward.",
+    instructions=[
+        "Propose next best actions",
+        "Draft checklists and timelines",
+        "Unblock with concrete suggestions and templates",
+        "Keep it brief and actionable",
+    ],
+)
 
 
 def analyze_task(task: models.Task) -> str:
@@ -24,7 +51,8 @@ def analyze_task(task: models.Task) -> str:
             f"recommended_priority={task.priority.value}"
         )
     else:
-        raise NotImplementedError()
+        result = _analyzer_agent.run(TaskAI.from_db(task))
+        return result.content or "No suggestions at this time."
 
 
 def assist_productivity(task: models.Task) -> str:
@@ -39,4 +67,5 @@ def assist_productivity(task: models.Task) -> str:
         ]
         return "Breakdown: [Research, Implement, Test, Review]. " f"Tips: {', '.join(tips)}"
     else:
-        raise NotImplementedError()
+        result = _assistant_agent.run(TaskAI.from_db(task))
+        return result.content or "No suggestions at this time."

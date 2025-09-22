@@ -17,6 +17,15 @@ class TaskBase(BaseModel):
     deadline: datetime.datetime | None = None
 
 
+class TaskAI(TaskBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    @classmethod
+    def from_db(cls, task: models.Task) -> Self:
+        result = cls.model_validate(task)
+        return result
+
+
 class TaskCreate(TaskBase):
     pass
 

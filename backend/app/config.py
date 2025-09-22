@@ -19,7 +19,10 @@ class Settings(BaseSettings):
     APP_ENV: Literal["development", "staging", "production"] = "development"
     DEPLOYMENT_PREFIX: str = "/" if APP_ENV == "development" else "/api"
     LOG_LEVEL: Literal["DEBUG", "INFO"] = "DEBUG" if APP_ENV == "development" else "INFO"
+
     MOCK_AGENTS: bool = False
+    OPENAI_MODEL: str = "gpt-4.1-nano"
+    OPENAI_API_KEY: str | None = None
 
     # Generated using 'openssl rand -hex 32'
     # Should only be used in development, production should set the variable

@@ -17,6 +17,7 @@ python-dotenv = "1.1.1"
 agno = "2.0.7"
 pyjwt = "2.10.1"
 passlib = { version = "1.7.4", extras = ["bcrypt"] }
+openai = "1.108.1"
 
 [tool.poetry.group.dev]
 optional = true
